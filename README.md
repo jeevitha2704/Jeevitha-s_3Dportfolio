@@ -1,1 +1,561 @@
 # Jeevitha-s_3Dportfolio
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeevitha J — 3D Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #020810;
+  --card: #080f1c;
+  --accent: #00f5c8;
+  --accent2: #7b5ea7;
+  --accent3: #ff6b6b;
+  --text: #e8f4f8;
+  --muted: #4a6d8a;
+  --border: rgba(0,245,200,0.13);
+  --glow: 0 0 40px rgba(0,245,200,0.18);
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; overflow-x: hidden; cursor: none; }
+
+.cur { width:10px;height:10px;background:var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;mix-blend-mode:screen; }
+.cur-ring { width:32px;height:32px;border:1px solid var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:0.45;transition:width 0.2s,height 0.2s; }
+
+#c3d { position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none; }
+.grid-bg { position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;background-image:linear-gradient(rgba(0,245,200,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,200,0.022) 1px,transparent 1px);background-size:70px 70px; }
+
+nav { position:fixed;top:0;left:0;right:0;z-index:200;padding:1.1rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(2,8,16,0.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border); }
+.nav-logo { font-family:'Space Mono',monospace;font-size:0.9rem;color:var(--accent);letter-spacing:0.25em; }
+.nav-links { display:flex;gap:2.5rem;list-style:none; }
+.nav-links a { font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);text-decoration:none;letter-spacing:0.15em;text-transform:uppercase;transition:color 0.3s;position:relative; }
+.nav-links a::after { content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width 0.3s; }
+.nav-links a:hover { color:var(--accent); }
+.nav-links a:hover::after { width:100%; }
+
+section { position:relative;z-index:10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 2rem; }
+.container { max-width:1100px;width:100%;margin:0 auto; }
+
+#hero { flex-direction:column;text-align:center;padding-top:7rem;position:relative; }
+#hero-canvas { position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none; }
+.hero-inner { position:relative;z-index:2; }
+.hero-eyebrow { font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1.4rem;opacity:0;animation:fadeUp 0.8s 0.2s forwards; }
+.hero-name { font-size:clamp(3.8rem,11vw,8rem);font-weight:800;line-height:0.92;letter-spacing:-0.03em;opacity:0;animation:fadeUp 0.8s 0.4s forwards;background:linear-gradient(140deg,#fff 0%,var(--accent) 45%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.hero-sub { font-family:'Space Mono',monospace;font-size:clamp(0.7rem,1.8vw,0.95rem);color:var(--muted);letter-spacing:0.22em;text-transform:uppercase;margin-top:1.3rem;opacity:0;animation:fadeUp 0.8s 0.6s forwards; }
+.hero-para { max-width:520px;margin:1.8rem auto 0;font-size:0.97rem;line-height:1.85;color:#7a9db8;opacity:0;animation:fadeUp 0.8s 0.8s forwards; }
+.hero-btns { display:flex;gap:1rem;justify-content:center;margin-top:2.2rem;opacity:0;animation:fadeUp 0.8s 1s forwards; }
+.btn { font-family:'Space Mono',monospace;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;padding:0.8rem 1.8rem;border-radius:2px;transition:all 0.3s;cursor:none;display:inline-block; }
+.btn-p { background:var(--accent);color:var(--bg);font-weight:700;border:1px solid var(--accent); }
+.btn-p:hover { background:transparent;color:var(--accent);box-shadow:var(--glow); }
+.btn-g { background:transparent;color:var(--muted);border:1px solid var(--border); }
+.btn-g:hover { color:var(--accent);border-color:var(--accent); }
+.scroll-hint { position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.4rem;opacity:0;animation:fadeUp 0.8s 1.5s forwards;z-index:2; }
+.scroll-hint span { font-family:'Space Mono',monospace;font-size:0.55rem;letter-spacing:0.25em;color:var(--muted);text-transform:uppercase; }
+.scroll-bar { width:1px;height:48px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scrollP 2s ease infinite; }
+@keyframes scrollP { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+.slabel { font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:0.7rem; }
+.stitle { font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-0.02em;line-height:1; }
+.hl { color:var(--accent); }
+
+#about .container { display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center; }
+.about-text p { font-size:0.95rem;line-height:1.9;color:#7a9db8;margin-bottom:1.1rem; }
+.edu-card { background:var(--card);border:1px solid var(--border);padding:1.6rem;border-radius:4px;margin-top:1.8rem;display:flex;gap:1.5rem;align-items:center;transition:all 0.3s; }
+.edu-card:hover { border-color:var(--accent);box-shadow:var(--glow); }
+.edu-deg { font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem; }
+.edu-name { font-size:1rem;font-weight:700;margin-bottom:0.25rem; }
+.edu-yr { font-size:0.82rem;color:var(--muted); }
+.stats { display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem; }
+.stat { background:var(--card);border:1px solid var(--border);padding:1.3rem;border-radius:4px;position:relative;overflow:hidden;transition:all 0.3s; }
+.stat::before { content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent); }
+.stat:hover { border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--glow); }
+.stat-n { font-size:1.9rem;font-weight:800;color:var(--accent);line-height:1; }
+.stat-l { font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-top:0.3rem; }
+.about-3d-wrap { width:100%;aspect-ratio:1;background:#050b16;border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative; }
+#about-canvas { width:100%;height:100%;display:block; }
+.about-badge { position:absolute;bottom:-1rem;right:-1rem;background:var(--accent);color:var(--bg);font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;padding:0.45rem 0.9rem;font-weight:700;text-transform:uppercase; }
+
+.skills-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem; }
+.sg { background:var(--card);border:1px solid var(--border);padding:1.8rem;border-radius:4px;transition:all 0.35s;position:relative;overflow:hidden; }
+.sg::after { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transition:transform 0.4s;transform-origin:left; }
+.sg:hover::after { transform:scaleX(1); }
+.sg:hover { border-color:rgba(0,245,200,0.28);transform:translateY(-5px);box-shadow:0 20px 40px rgba(0,0,0,0.35); }
+.sg-icon { font-size:1.8rem;margin-bottom:0.9rem; }
+.sg-title { font-family:'Space Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem; }
+.tags { display:flex;flex-wrap:wrap;gap:0.45rem; }
+.tag { font-family:'Space Mono',monospace;font-size:0.62rem;padding:0.3rem 0.7rem;background:rgba(0,245,200,0.06);border:1px solid rgba(0,245,200,0.18);border-radius:2px;color:var(--text);transition:all 0.2s; }
+.tag:hover { background:var(--accent);color:var(--bg);border-color:var(--accent); }
+
+.profiles { display:grid;grid-template-columns:repeat(6,1fr);gap:0.9rem;margin-top:2rem; }
+.profile-a { text-align:center;padding:1.3rem 0.8rem;background:var(--card);border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text);transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:0.5rem;cursor:none; }
+.profile-a:hover { border-color:var(--accent);transform:translateY(-5px);box-shadow:var(--glow); }
+.profile-ico { font-size:1.6rem; }
+.profile-nm { font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted); }
+
+.projects-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:1.8rem; }
+.pc { background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:all 0.4s;cursor:none; }
+.pc:hover { border-color:var(--accent);transform:translateY(-8px);box-shadow:0 30px 60px rgba(0,0,0,0.4),var(--glow); }
+.pc-top { height:6px;background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+.pc-body { padding:1.8rem; }
+.pc-num { font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.2em;margin-bottom:0.9rem; }
+.pc-name { font-size:1.2rem;font-weight:800;margin-bottom:0.7rem; }
+.pc-desc { font-size:0.88rem;line-height:1.7;color:#5f8099;margin-bottom:1.3rem; }
+.pc-tech { display:flex;flex-wrap:wrap;gap:0.35rem; }
+.tt { font-family:'Space Mono',monospace;font-size:0.58rem;padding:0.22rem 0.55rem;background:rgba(123,94,167,0.18);border:1px solid rgba(123,94,167,0.35);border-radius:2px;color:#a98fd0; }
+
+.ach-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem; }
+.ach-card { background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1.4rem;transition:all 0.3s;position:relative;overflow:hidden; }
+.ach-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform 0.4s; }
+.ach-card:hover { border-color:rgba(0,245,200,0.3);transform:translateY(-5px);box-shadow:0 20px 40px rgba(0,0,0,0.3); }
+.ach-card:hover::before { transform:scaleX(1); }
+.ach-ico { font-size:1.6rem;margin-bottom:0.7rem; }
+.ach-title { font-size:0.88rem;font-weight:700;line-height:1.4;margin-bottom:0.4rem; }
+.ach-sub { font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase; }
+
+.cert-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem; }
+.cert-card { background:var(--card);border:1px solid var(--border);border-bottom:3px solid var(--accent2);border-radius:4px;padding:1.6rem 1rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.6rem;transition:all 0.3s; }
+.cert-card:hover { border-bottom-color:var(--accent);transform:translateY(-5px);box-shadow:var(--glow); }
+.cert-ico { font-size:1.8rem; }
+.cert-nm { font-size:0.82rem;font-weight:700;line-height:1.4; }
+.cert-prov { font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--accent2);letter-spacing:0.12em;text-transform:uppercase; }
+
+#contact { flex-direction:column;text-align:center; }
+.contact-email { font-size:clamp(1.1rem,2.5vw,1.8rem);font-weight:800;color:var(--accent);text-decoration:none;margin-top:1.4rem;display:block;transition:opacity 0.3s; }
+.contact-email:hover { opacity:0.65; }
+.contact-links { display:flex;flex-wrap:wrap;gap:0.8rem;justify-content:center;margin-top:2rem; }
+.cl { display:flex;align-items:center;gap:0.7rem;padding:0.9rem 1.3rem;background:var(--card);border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;transition:all 0.3s;cursor:none; }
+.cl:hover { color:var(--accent);border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-3px); }
+
+footer { position:relative;z-index:10;text-align:center;padding:1.8rem;border-top:1px solid var(--border);font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em; }
+
+.reveal { opacity:0;transform:translateY(38px);transition:opacity 0.85s ease,transform 0.85s ease; }
+.reveal.visible { opacity:1;transform:translateY(0); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:900px){
+  #about .container{grid-template-columns:1fr;gap:3rem;}
+  .skills-grid{grid-template-columns:1fr 1fr;}
+  .projects-grid{grid-template-columns:1fr;}
+  .ach-grid{grid-template-columns:repeat(2,1fr);}
+  .cert-grid{grid-template-columns:repeat(2,1fr);}
+  .profiles{grid-template-columns:repeat(3,1fr);}
+  nav{padding:1rem 1.5rem;}
+  .nav-links{gap:1.5rem;}
+}
+@media(max-width:560px){
+  .skills-grid{grid-template-columns:1fr;}
+  .ach-grid{grid-template-columns:1fr;}
+  .profiles{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="cur-ring"></div>
+<div class="grid-bg"></div>
+<canvas id="c3d"></canvas>
+
+<nav>
+  <div class="nav-logo">JJ<span style="color:var(--muted)">_</span>dev</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#achievements">Milestones</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">// Computer Science Engineer · Aspiring Software Developer</p>
+    <h1 class="hero-name">JEEVITHA J</h1>
+    <p class="hero-sub">React.js · Python · AI/ML · Problem Solver</p>
+    <p class="hero-para">Computer Science Engineering student with a passion for building impactful software — from AI tools to mobile apps. 1000+ problems solved, certified by AWS &amp; Google.</p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-p">View Projects</a>
+      <a href="#contact" class="btn btn-g">Get In Touch</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container">
+    <div class="about-text reveal">
+      <p class="slabel">// 01. About Me</p>
+      <h2 class="stitle">Building <span class="hl">Real</span><br>Solutions</h2>
+      <div style="margin-top:1.5rem;">
+        <p>I'm Jeevitha J — a first-year B.Tech CSE student turning ideas into impactful software. From AI resume analyzers to farmer marketplaces, I build tools that solve real-world problems.</p>
+        <p>I've solved 1000+ algorithmic challenges and hold certifications from both AWS and Google. Driven by curiosity and a deep love for clean, functional code.</p>
+      </div>
+      <div class="edu-card">
+        <div style="font-size:2.2rem;flex-shrink:0;">🎓</div>
+        <div>
+          <div class="edu-deg">B.Tech — Computer Science Engineering</div>
+          <div class="edu-name">Sri Manakula Vinayagar Engineering College</div>
+          <div class="edu-yr">2024 – 2028 · Puducherry, India</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-n">1000+</div><div class="stat-l">Problems Solved</div></div>
+        <div class="stat"><div class="stat-n">3</div><div class="stat-l">Live Projects</div></div>
+        <div class="stat"><div class="stat-n">4</div><div class="stat-l">Certifications</div></div>
+        <div class="stat"><div class="stat-n">9000</div><div class="stat-l">SkillRack Rank</div></div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s;">
+      <div class="about-3d-wrap">
+        <canvas id="about-canvas"></canvas>
+      </div>
+      <div class="about-badge">CSE · 2024–2028</div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:3rem;">
+      <p class="slabel">// 02. Skills</p>
+      <h2 class="stitle">Technical <span class="hl">Arsenal</span></h2>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="sg"><div class="sg-icon">💻</div><div class="sg-title">Languages</div><div class="tags"><span class="tag">C</span><span class="tag">C++</span><span class="tag">Java</span><span class="tag">Python</span></div></div>
+      <div class="sg"><div class="sg-icon">🌐</div><div class="sg-title">Frontend</div><div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">React.js</span></div></div>
+      <div class="sg"><div class="sg-icon">⚙️</div><div class="sg-title">Tools &amp; Platforms</div><div class="tags"><span class="tag">GitHub</span><span class="tag">VS Code</span><span class="tag">AWS</span><span class="tag">Android</span></div></div>
+      <div class="sg"><div class="sg-icon">🧠</div><div class="sg-title">CS Fundamentals</div><div class="tags"><span class="tag">DSA</span><span class="tag">OOP</span><span class="tag">SDLC</span><span class="tag">Algorithms</span></div></div>
+      <div class="sg"><div class="sg-icon">🤖</div><div class="sg-title">AI &amp; Cloud</div><div class="tags"><span class="tag">AI/ML</span><span class="tag">Data Engineering</span><span class="tag">Cloud</span></div></div>
+      <div class="sg"><div class="sg-icon">🔍</div><div class="sg-title">Competitive Coding</div><div class="tags"><span class="tag">LeetCode</span><span class="tag">HackerRank</span><span class="tag">CodeChef</span><span class="tag">SkillRack</span></div></div>
+    </div>
+    <div class="reveal" style="transition-delay:0.25s;margin-top:3rem;">
+      <p class="slabel" style="margin-bottom:1rem;">// Coding Profiles</p>
+      <div class="profiles">
+        <a href="https://leetcode.com/u/jeevitha2704/" class="profile-a" target="_blank"><div class="profile-ico">⚡</div><div class="profile-nm">LeetCode</div></a>
+        <a href="https://www.hackerrank.com/profile/jeevitha27042007" class="profile-a" target="_blank"><div class="profile-ico">🏆</div><div class="profile-nm">HackerRank</div></a>
+        <a href="https://www.codechef.com/users/quick_fest_13" class="profile-a" target="_blank"><div class="profile-ico">👨‍🍳</div><div class="profile-nm">CodeChef</div></a>
+        <a href="https://www.skillrack.com/faces/resume.xhtml?id=522914&key=97b979f82d63a88ab33d2af8afbc473754d1d577" class="profile-a" target="_blank"><div class="profile-ico">🎯</div><div class="profile-nm">SkillRack</div></a>
+        <a href="https://github.com/jeevitha2704" class="profile-a" target="_blank"><div class="profile-ico">🐙</div><div class="profile-nm">GitHub</div></a>
+        <a href="https://www.linkedin.com/in/jeevitha-jegadissan-a11949329/" class="profile-a" target="_blank"><div class="profile-ico">💼</div><div class="profile-nm">LinkedIn</div></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:3rem;">
+      <p class="slabel">// 03. Projects</p>
+      <h2 class="stitle">Featured <span class="hl">Work</span></h2>
+    </div>
+    <div class="projects-grid">
+      <div class="pc reveal">
+        <div class="pc-top"></div>
+        <div class="pc-body">
+          <div class="pc-num">01 / AI Tool</div>
+          <h3 class="pc-name">SkillScan — AI Resume Analyzer</h3>
+          <p class="pc-desc">AI-powered resume analysis that matches resumes with job descriptions via keyword extraction. Identifies skill gaps and gives improvement suggestions.</p>
+          <div class="pc-tech"><span class="tt">Python</span><span class="tt">AI/ML</span><span class="tt">NLP</span><span class="tt">Keyword Extraction</span></div>
+        </div>
+      </div>
+      <div class="pc reveal" style="transition-delay:0.15s;">
+        <div class="pc-top" style="background:linear-gradient(90deg,var(--accent2),var(--accent3));"></div>
+        <div class="pc-body">
+          <div class="pc-num" style="color:var(--accent2);">02 / Mobile App</div>
+          <h3 class="pc-name">Direct Market Access for Farmers</h3>
+          <p class="pc-desc">A mobile app connecting farmers directly with buyers — no middlemen. Features crop listings, real-time pricing and secure digital transactions.</p>
+          <div class="pc-tech"><span class="tt">Android</span><span class="tt">Java</span><span class="tt">Real-time</span><span class="tt">Marketplace</span></div>
+        </div>
+      </div>
+      <div class="pc reveal" style="transition-delay:0.3s;grid-column:1/-1;">
+        <div class="pc-top" style="background:linear-gradient(90deg,var(--accent3),var(--accent));"></div>
+        <div class="pc-body" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+          <div>
+            <div class="pc-num" style="color:var(--accent3);">03 / EdTech Platform</div>
+            <h3 class="pc-name">TechApti — Technical &amp; Practical Learning Platform</h3>
+          </div>
+          <div>
+            <p class="pc-desc">A learning platform helping students develop technical skills through structured content and assessments — focused on aptitude and placement readiness.</p>
+            <div class="pc-tech"><span class="tt">React.js</span><span class="tt">Web Dev</span><span class="tt">Assessment</span><span class="tt">Ed-Tech</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="achievements">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:3rem;">
+      <p class="slabel">// 04. Milestones</p>
+      <h2 class="stitle">Achievements &amp; <span class="hl">Certs</span></h2>
+    </div>
+    <div class="reveal" style="margin-bottom:3rem;">
+      <p class="slabel" style="margin-bottom:1.2rem;">🏅 Achievements</p>
+      <div class="ach-grid">
+        <div class="ach-card"><div class="ach-ico">🥈</div><div class="ach-title">2nd Prize — Technical Quest</div><div class="ach-sub">Technovation 2k25 · MIT College</div></div>
+        <div class="ach-card"><div class="ach-ico">🥈</div><div class="ach-title">2nd Prize — Debugging</div><div class="ach-sub">Datanex'26 · Vel Tech University, Chennai</div></div>
+        <div class="ach-card"><div class="ach-ico">🎤</div><div class="ach-title">Paper Presentation &amp; Project Expo</div><div class="ach-sub">Technovation 2k25 · MIT College</div></div>
+        <div class="ach-card"><div class="ach-ico">🎓</div><div class="ach-title">Participant — Mitilence 2025</div><div class="ach-sub">MVIT College · March 2025</div></div>
+        <div class="ach-card"><div class="ach-ico">📊</div><div class="ach-title">Ranked #9000 on SkillRack</div><div class="ach-sub">Competitive ranking · All users</div></div>
+        <div class="ach-card"><div class="ach-ico">⚡</div><div class="ach-title">1000+ Problems Solved</div><div class="ach-sub">LeetCode · HackerRank · CodeChef · SkillRack</div></div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s;">
+      <p class="slabel" style="margin-bottom:1.2rem;">📜 Certifications</p>
+      <div class="cert-grid">
+        <div class="cert-card"><div class="cert-ico">☁️</div><div class="cert-nm">Cloud Virtual Internship</div><div class="cert-prov">Amazon Web Services</div></div>
+        <div class="cert-card"><div class="cert-ico">🛠️</div><div class="cert-nm">Data Engineering</div><div class="cert-prov">Amazon Web Services</div></div>
+        <div class="cert-card"><div class="cert-ico">🤖</div><div class="cert-nm">AI &amp; Machine Learning</div><div class="cert-prov">Google</div></div>
+        <div class="cert-card"><div class="cert-ico">📱</div><div class="cert-nm">Android Development</div><div class="cert-prov">Google</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="reveal" style="text-align:center;max-width:620px;">
+    <p class="slabel">// 05. Contact</p>
+    <h2 class="stitle">Let's Build<br><span class="hl">Something</span></h2>
+    <p style="color:var(--muted);margin-top:1rem;font-size:0.93rem;line-height:1.85;">Open to internships, collaborations, and exciting projects. Let's connect!</p>
+    <a href="mailto:jeevitha27042007@gmail.com" class="contact-email">jeevitha27042007@gmail.com</a>
+    <div class="contact-links">
+      <a href="https://www.linkedin.com/in/jeevitha-jegadissan-a11949329/" class="cl" target="_blank"><span>💼</span> LinkedIn</a>
+      <a href="https://github.com/jeevitha2704" class="cl" target="_blank"><span>🐙</span> GitHub</a>
+      <a href="https://leetcode.com/u/jeevitha2704/" class="cl" target="_blank"><span>⚡</span> LeetCode</a>
+      <a href="https://www.hackerrank.com/profile/jeevitha27042007" class="cl" target="_blank"><span>🏆</span> HackerRank</a>
+      <a href="https://www.codechef.com/users/quick_fest_13" class="cl" target="_blank"><span>👨‍🍳</span> CodeChef</a>
+      <a href="https://www.skillrack.com/faces/resume.xhtml?id=522914&key=97b979f82d63a88ab33d2af8afbc473754d1d577" class="cl" target="_blank"><span>🎯</span> SkillRack</a>
+      <a href="tel:8807957750" class="cl"><span>📱</span> +91 8807957750</a>
+      <a href="#" class="cl"><span>📍</span> Puducherry, India</a>
+    </div>
+  </div>
+</section>
+
+<footer><p>Designed &amp; Built by <span style="color:var(--accent)">Jeevitha J</span> · 2025 · All Rights Reserved</p></footer>
+
+<script>
+// ─── CURSOR ──────────────────────────────────────
+const cur=document.getElementById('cur'),curR=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.transform=`translate(${mx-5}px,${my-5}px)`;});
+(function loop(){rx+=(mx-rx)*0.11;ry+=(my-ry)*0.11;curR.style.transform=`translate(${rx-16}px,${ry-16}px)`;requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.pc,.sg,.stat').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{curR.style.width='48px';curR.style.height='48px';curR.style.opacity='0.7';});
+  el.addEventListener('mouseleave',()=>{curR.style.width='32px';curR.style.height='32px';curR.style.opacity='0.45';});
+});
+
+// ─── MATRIX MATH ─────────────────────────────────
+const m4id=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+const mul4=(a,b)=>{const r=new Float32Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++){let v=0;for(let k=0;k<4;k++)v+=a[i*4+k]*b[k*4+j];r[i*4+j]=v;}return r;};
+const tv4=(m,v)=>[m[0]*v[0]+m[4]*v[1]+m[8]*v[2]+m[12]*v[3],m[1]*v[0]+m[5]*v[1]+m[9]*v[2]+m[13]*v[3],m[2]*v[0]+m[6]*v[1]+m[10]*v[2]+m[14]*v[3],m[3]*v[0]+m[7]*v[1]+m[11]*v[2]+m[15]*v[3]];
+const rxM=a=>{const c=Math.cos(a),s=Math.sin(a),m=m4id();m[5]=c;m[6]=s;m[9]=-s;m[10]=c;return m;};
+const ryM=a=>{const c=Math.cos(a),s=Math.sin(a),m=m4id();m[0]=c;m[2]=-s;m[8]=s;m[10]=c;return m;};
+const rzM=a=>{const c=Math.cos(a),s=Math.sin(a),m=m4id();m[0]=c;m[1]=s;m[4]=-s;m[5]=c;return m;};
+const persp=(fov,asp,n,f)=>{const fo=1/Math.tan(fov/2),nf=1/(n-f),m=new Float32Array(16);m[0]=fo/asp;m[5]=fo;m[10]=(f+n)*nf;m[11]=-1;m[14]=2*f*n*nf;return m;};
+const proj=(pt,P,W,H)=>{const c=tv4(P,[pt[0],pt[1],pt[2],1]);if(c[3]<=0)return null;return[(c[0]/c[3])*0.5*W+0.5*W,(-c[1]/c[3])*0.5*H+0.5*H,c[2]/c[3]];};
+
+// ─── BG CANVAS — particles + wireframe polyhedra ─
+(()=>{
+  const cv=document.getElementById('c3d'),ctx=cv.getContext('2d');
+  let W,H;
+  const rsz=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;};
+  rsz();addEventListener('resize',rsz);
+
+  // particles
+  const N=800,pts=[];
+  for(let i=0;i<N;i++){
+    const t=Math.random();
+    pts.push({x:(Math.random()-.5)*160,y:(Math.random()-.5)*160,z:(Math.random()-.5)*100,
+      c:t<.45?[0,245,200]:t<.72?[123,94,167]:[220,240,255],s:.6+Math.random()*1.4,vy:(Math.random()-.5)*.007});
+  }
+
+  // icosahedron edges
+  const iV=(sc)=>{const t=(1+Math.sqrt(5))/2,v=[[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]];return v.map(p=>{const l=Math.hypot(...p);return p.map(x=>x/l*sc);});};
+  const iE=[[0,1],[0,5],[0,7],[0,10],[0,11],[1,5],[1,7],[1,8],[1,9],[2,3],[2,4],[2,6],[2,10],[2,11],[3,4],[3,6],[3,8],[3,9],[4,5],[4,9],[4,11],[5,9],[5,11],[6,7],[6,8],[6,10],[7,8],[7,10],[8,9],[10,11]];
+  const shapes=Array.from({length:5},(_,i)=>({v:iV(4+Math.random()*3),e:iE,x:(Math.random()-.5)*55,y:(Math.random()-.5)*55,z:-8+(Math.random()-.5)*18,rx:Math.random()*6.28,ry:Math.random()*6.28,drx:(Math.random()-.5)*.004,dry:(Math.random()-.5)*.005,c:i%2?[123,94,167]:[0,245,200],fy:Math.random()*6.28}));
+
+  let mxn=0,myn=0;
+  addEventListener('mousemove',e=>{mxn=(e.clientX/innerWidth-.5)*2;myn=(e.clientY/innerHeight-.5)*2;});
+  let camX=0,camY=0,fr=0;
+
+  (function draw(){
+    requestAnimationFrame(draw);fr++;
+    ctx.clearRect(0,0,W,H);
+    camX+=(mxn*3-camX)*.016;camY+=(-myn*3-camY)*.016;
+    const P=persp(Math.PI/3,W/H,.5,500);
+    const VR=mul4(rxM(fr*.001+myn*.02),ryM(fr*.0015+mxn*.04));
+
+    // particles
+    for(const p of pts){
+      p.y+=p.vy;if(p.y>80)p.y=-80;if(p.y<-80)p.y=80;
+      const vp=tv4(VR,[p.x,p.y,p.z,1]);
+      const sp=proj([vp[0]-camX,vp[1]-camY,vp[2]-28],P,W,H);
+      if(!sp||sp[2]<-1||sp[2]>1)continue;
+      const d=(sp[2]+1)/2,a=(0.12+d*.65).toFixed(3);
+      ctx.beginPath();ctx.arc(sp[0],sp[1],p.s*(0.35+d),0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.c[0]},${p.c[1]},${p.c[2]},${a})`;ctx.fill();
+    }
+
+    // wireframe shapes
+    for(const s of shapes){
+      s.rx+=s.drx;s.ry+=s.dry;s.fy+=.008;
+      const MR=mul4(mul4(VR,mul4(rxM(s.rx),ryM(s.ry))),rzM(fr*.0004));
+      const pv=s.v.map(v=>{const rv=tv4(MR,[v[0],v[1],v[2],1]);return proj([rv[0]+s.x-camX,rv[1]+s.y+Math.sin(s.fy)*.03-camY,rv[2]+s.z],P,W,H);});
+      ctx.lineWidth=.6;
+      for(const[a,b]of s.e){
+        const pa=pv[a],pb=pv[b];if(!pa||!pb)continue;
+        const d=(((pa[2]+pb[2])/2)+1)/2;
+        if(d<0||d>1)continue;
+        ctx.strokeStyle=`rgba(${s.c[0]},${s.c[1]},${s.c[2]},${(.025+d*.1).toFixed(3)})`;
+        ctx.beginPath();ctx.moveTo(pa[0],pa[1]);ctx.lineTo(pb[0],pb[1]);ctx.stroke();
+      }
+    }
+  })();
+})();
+
+// ─── HERO CANVAS — torus knot + orbiting rings ───
+(()=>{
+  const cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
+  let W,H;
+  const rsz=()=>{W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;};
+  rsz();addEventListener('resize',rsz);
+
+  // Torus knot points
+  const TK=(p=2,q=3,R=Math.min(W,H)*.22||90,r=Math.min(W,H)*.07||28,n=320)=>{
+    const pts=[];
+    for(let i=0;i<n;i++){const t=i/n*Math.PI*2,phi=q*t/p;pts.push([(R+r*Math.cos(phi))*Math.cos(p*t),(R+r*Math.cos(phi))*Math.sin(p*t),r*Math.sin(phi)]);}
+    return pts;
+  };
+
+  // Orbiting halo rings
+  const halos=[{r:1.5,tilt:.6,spd:.0004,ph:0,c:[0,245,200]},{r:1.9,tilt:1.1,spd:.0003,ph:2.1,c:[123,94,167]},{r:2.3,tilt:.3,spd:.0005,ph:4.2,c:[255,107,107]}];
+
+  // Small orbiting dots
+  const dots=Array.from({length:16},(_,i)=>({a:i/16*Math.PI*2,r:1.6+Math.random()*.6,tilt:Math.random()*Math.PI,spd:(.0008+Math.random()*.001)*(Math.random()<.5?1:-1),c:i%3===0?[0,245,200]:i%3===1?[123,94,167]:[255,107,107],sz:1.5+Math.random()*2.5}));
+
+  let mxn=0,myn=0;
+  addEventListener('mousemove',e=>{mxn=(e.clientX/innerWidth-.5)*2;myn=(e.clientY/innerHeight-.5)*2;});
+
+  const p2d=(x,y,z,cx,cy,fov=340)=>{const sc=fov/(fov+z);return[cx+x*sc,cy+y*sc,sc];};
+
+  let fr=0;
+  (function draw(){
+    requestAnimationFrame(draw);fr++;
+    W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2,sc=Math.min(W,H)/500;
+    const t=fr*.012,MR=mul4(rxM(myn*.3),ryM(mxn*.3+t*.18));
+
+    // Halos
+    for(const h of halos){
+      const ang=fr*h.spd+h.ph,TR=mul4(mul4(rxM(h.tilt),rzM(h.tilt*.5)),ryM(ang));
+      const sz=h.r*Math.min(W,H)*.32;
+      const rpts=[];
+      for(let i=0;i<=90;i++){const a=i/90*Math.PI*2;const rv=tv4(mul4(MR,TR),[Math.cos(a)*sz,Math.sin(a)*sz,0,1]);rpts.push(p2d(rv[0],rv[1],rv[2],cx,cy,420*sc));}
+      ctx.beginPath();
+      rpts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+      ctx.strokeStyle=`rgba(${h.c[0]},${h.c[1]},${h.c[2]},0.1)`;ctx.lineWidth=1;ctx.stroke();
+    }
+
+    // Torus knot
+    const R=Math.min(W,H)*.22,r=Math.min(W,H)*.07;
+    const tkPts=TK(2,3,R,r,300);
+    ctx.lineWidth=1.6;
+    for(let i=0;i<tkPts.length;i++){
+      const a=tkPts[i],b=tkPts[(i+1)%tkPts.length];
+      const ra=tv4(MR,[a[0],a[1],a[2],1]),rb=tv4(MR,[b[0],b[1],b[2],1]);
+      const pa=p2d(ra[0],ra[1],ra[2],cx,cy,380*sc),pb=p2d(rb[0],rb[1],rb[2],cx,cy,380*sc);
+      const d=(pa[2]+pb[2])/2,al=(0.08+d*.5).toFixed(3);
+      const hue=i/tkPts.length;
+      if(hue<.5){const mx2=hue*2;ctx.strokeStyle=`rgba(${Math.round(mx2*123)},${Math.round(245-mx2*151)},${Math.round(200-mx2*33)},${al})`;}
+      else{const mx2=(hue-.5)*2;ctx.strokeStyle=`rgba(${Math.round(123-mx2*123)},${Math.round(94+mx2*151)},${Math.round(167+mx2*33)},${al})`;}
+      ctx.beginPath();ctx.moveTo(pa[0],pa[1]);ctx.lineTo(pb[0],pb[1]);ctx.stroke();
+    }
+
+    // Orbiting dots
+    for(const d of dots){
+      d.a+=d.spd;
+      const sz=d.r*Math.min(W,H)*.28;
+      const lx=Math.cos(d.a)*sz,lz=Math.sin(d.a)*sz,ly=Math.sin(d.a*.5+d.tilt)*sz*.2;
+      const rv=tv4(MR,[lx,ly,lz,1]);
+      const pp=p2d(rv[0],rv[1],rv[2],cx,cy,380*sc);
+      const al=Math.max(.25,(pp[2]+1.5)/3);
+      ctx.beginPath();ctx.arc(pp[0],pp[1],d.sz*sc*pp[2],0,Math.PI*2);
+      ctx.fillStyle=`rgba(${d.c[0]},${d.c[1]},${d.c[2]},${al})`;ctx.fill();
+      ctx.beginPath();ctx.arc(pp[0],pp[1],d.sz*sc*pp[2]*3.5,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${d.c[0]},${d.c[1]},${d.c[2]},0.05)`;ctx.fill();
+    }
+  })();
+})();
+
+// ─── ABOUT CANVAS — double helix DNA ─────────────
+(()=>{
+  const cv=document.getElementById('about-canvas'),ctx=cv.getContext('2d');
+  (function draw(){
+    requestAnimationFrame(draw);
+    const SZ=cv.offsetWidth||300;
+    if(cv.width!==SZ){cv.width=SZ;cv.height=SZ;}
+    ctx.clearRect(0,0,SZ,SZ);
+    const t=Date.now()*.001,cx=SZ/2,cy=SZ/2;
+
+    // Outer rings
+    for(let i=0;i<4;i++){
+      ctx.beginPath();ctx.arc(cx,cy,SZ*(.3+i*.07),0,Math.PI*2);
+      ctx.strokeStyle=i%2?`rgba(123,94,167,${.03+i*.015})`:`rgba(0,245,200,${.03+i*.015})`;
+      ctx.lineWidth=1;ctx.stroke();
+    }
+
+    // Double helix
+    const hR=SZ*.17,hH=SZ*.78,n=80;
+    const s1=[],s2=[];
+    for(let i=0;i<=n;i++){
+      const prog=i/n,ang=prog*Math.PI*4+t*1.3,y=cy-hH/2+prog*hH;
+      s1.push({x:cx+Math.cos(ang)*hR,y,d:Math.sin(ang)});
+      s2.push({x:cx+Math.cos(ang+Math.PI)*hR,y,d:Math.sin(ang+Math.PI)});
+    }
+
+    // Rungs
+    for(let i=0;i<s1.length;i+=5){
+      const p1=s1[i],p2=s2[i],al=Math.abs((p1.d+p2.d)/2)*.12+.03;
+      ctx.strokeStyle=`rgba(0,245,200,${al.toFixed(3)})`;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+    }
+
+    // Strand 1
+    ctx.beginPath();s1.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.strokeStyle='rgba(0,245,200,0.6)';ctx.lineWidth=2;ctx.stroke();
+
+    // Strand 2
+    ctx.beginPath();s2.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.strokeStyle='rgba(123,94,167,0.6)';ctx.lineWidth=2;ctx.stroke();
+
+    // Dots
+    for(let i=0;i<s1.length;i+=7){
+      const p=s1[i],al=.35+((p.d+1)/2)*.65,sz=1.5+((p.d+1)/2)*3;
+      ctx.beginPath();ctx.arc(p.x,p.y,sz,0,Math.PI*2);ctx.fillStyle=`rgba(0,245,200,${al})`;ctx.fill();
+    }
+    for(let i=0;i<s2.length;i+=7){
+      const p=s2[i],al=.35+((p.d+1)/2)*.65,sz=1.5+((p.d+1)/2)*3;
+      ctx.beginPath();ctx.arc(p.x,p.y,sz,0,Math.PI*2);ctx.fillStyle=`rgba(123,94,167,${al})`;ctx.fill();
+    }
+
+    // Centre pulse
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,SZ*.22);
+    g.addColorStop(0,'rgba(0,245,200,0.05)');g.addColorStop(1,'transparent');
+    ctx.beginPath();ctx.arc(cx,cy,SZ*.22,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  })();
+})();
+
+// ─── SCROLL REVEAL ───────────────────────────────
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');}),{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
